@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MIST Admissions :: Application Form</title>
+    <link rel="icon" type="image/png" href="logo(1).png">
+    <style>
+        body {
+            margin: 0; padding: 20px;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url('back.jpg'); 
+            background-size: cover; background-position: center; background-attachment: fixed;
+            min-height: 100vh; display: flex; flex-direction: column; align-items: center;
+        }
+
+        /* ADMIN TRIGGER ICON */
+        .admin-trigger {
+            position: absolute; top: 20px; right: 30px; width: 50px; height: 50px;
+            background: rgba(255, 255, 255, 0.2); backdrop-filter: blur(10px);
+            border-radius: 50%; display: flex; align-items: center; justify-content: center;
+            cursor: pointer; transition: 0.3s; border: 1px solid rgba(255,255,255,0.3);
+            font-size: 24px; color: white; z-index: 1000;
+        }
+        .admin-trigger:hover { background: #4CAF50; transform: scale(1.1); }
+
+        .container {
+            max-width: 1000px; width: 100%; background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px); margin: 20px auto; border-radius: 20px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.1); overflow: hidden;
+            animation: fadeInUp 0.8s ease-out; border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+
+        .banner-container { width: 100%; background: white; padding: 20px 0; text-align: center; border-bottom: 4px solid #4CAF50; }
+        .banner-container img { max-width: 85%; height: auto; animation: floating 4s ease-in-out infinite; }
+        @keyframes floating { 0%, 100% { transform: translateY(0px); } 50% { transform: translateY(-8px); } }
+
+        .content-padding { padding: 40px; }
+        h1 { color: #2c3e50; text-align: center; margin-top: 0; font-weight: 800; }
+
+        .registration-form { display: grid; grid-template-columns: 1fr 1fr; gap: 25px; }
+        .input-group { display: flex; flex-direction: column; }
+        label { font-weight: bold; margin-bottom: 8px; color: #34495e; font-size: 14px; }
+
+        input, select {
+            padding: 14px; border: 2px solid #edeff2; border-radius: 10px;
+            font-size: 15px; outline: none; transition: 0.3s; background: white;
+        }
+        input:focus, select:focus { border-color: #4CAF50; box-shadow: 0 0 12px rgba(76, 175, 80, 0.1); }
+
+        /* MINIMALIST CLEAN BUTTON */
+        .submit-btn {
+            grid-column: span 2; justify-self: center; 
+            background: #4CAF50; color: white;
+            padding: 15px 80px; border: none; border-radius: 10px; 
+            font-size: 16px; font-weight: bold;
+            cursor: pointer; transition: background 0.3s ease;
+            margin-top: 20px;
+        }
+        .submit-btn:hover { background: #3d8b40; }
+
+        /* GALLERY - RESTORED TO ORIGINAL */
+        .gallery { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; margin: 30px 0; grid-column: span 2; }
+        .gallery img { width: 100%; height: 100px; object-fit: cover; border-radius: 10px; }
+
+        /* CONTACT BUBBLE */
+        .contact-bubble { position: fixed; bottom: 30px; right: 30px; width: 55px; height: 55px; background: #4CAF50; color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 24px; cursor: pointer; z-index: 9999; }
+        .contact-card { position: absolute; bottom: 70px; right: 0; width: 220px; background: white; border-radius: 12px; padding: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.15); display: none; color: #333; text-align: left; }
+        .show-card { display: block !important; }
+
+        .site-link-container {
+    grid-column: span 2;
+    text-align: center;
+    margin-top: 15px;
+}
+
+.official-site-link {
+    color: #4CAF50;
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: bold;
+    transition: 0.3s;
+}
+
+.official-site-link:hover {
+    text-decoration: underline;
+    color: #2e7d32;
+}
+
+/* MINIMALIST LOGIN MODAL */
+.modal-overlay {
+    display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0, 0, 0, 0.5); backdrop-filter: blur(8px);
+    z-index: 10000; justify-content: center; align-items: center;
+}
+.modal-box {
+    background: white; padding: 40px; border-radius: 20px; width: 350px;
+    text-align: center; box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+    animation: popIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+@keyframes popIn { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+
+.modal-box h2 { margin-bottom: 20px; color: #2e7d32; font-size: 22px; }
+.login-input {
+    width: 100%; padding: 12px; margin-bottom: 15px; border: 2px solid #eee;
+    border-radius: 10px; outline: none; box-sizing: border-box; font-size: 15px;
+}
+.login-input:focus { border-color: #4CAF50; }
+
+.login-submit {
+    width: 100%; padding: 12px; background: #4CAF50; color: white;
+    border: none; border-radius: 10px; font-weight: bold; cursor: pointer;
+    font-size: 16px; transition: 0.3s;
+}
+.login-submit:hover { background: #388e3c; }
+.cancel-login { display: block; margin-top: 15px; color: #888; text-decoration: none; font-size: 13px; cursor: pointer; }
+
+/* Error State for Inputs */
+.login-input.error {
+    border-color: #ff4757 !important;
+    background-color: #fff1f2;
+}
+
+/* Error Message Text */
+#loginErrorMsg {
+    color: #ff4757;
+    font-size: 13px;
+    margin-bottom: 10px;
+    display: none; /* Hidden by default */
+    font-weight: bold;
+}
+    
+    </style>
+</head>
+<body>
+
+<div class="modal-overlay" id="loginModal">
+    <div class="modal-box">
+        <img src="logo(1).png" style="width: 60px; margin-bottom: 10px;">
+        <h2>Staff Authentication</h2>
+        
+        <div id="loginErrorMsg">Incorrect username or password</div>
+
+        <input type="text" id="adminUser" class="login-input" placeholder="Username">
+        <input type="password" id="adminPass" class="login-input" placeholder="Password">
+        
+        <button class="login-submit" onclick="validateAdmin()">Login to Dashboard</button>
+        <span class="cancel-login" onclick="closeLogin()">Cancel</span>
+    </div>
+</div>
+</div>
+
+    <div class="admin-trigger" onclick="loginAdmin()" title="Staff Login">👤</div>
+
+    <div class="container">
+        <div class="banner-container"><img src="header.png" alt="MIST Banner"></div>
+        <div class="content-padding">
+            <header style="text-align: center; margin-bottom: 40px;">
+                <h1>STUDENT REGISTRATION FORM</h1>
+                <p style="color: #666;">Thank you for choosing to join Musketeers Institute of Science and Technology. Please fill your details below to register.</p>
+            </header>
+
+            <form id="studentForm" class="registration-form">
+                <div class="input-group"><label>Full Name</label><input type="text" id="studentName" placeholder="Full Name" required></div>
+                <div class="input-group"><label>Phone Number</label><input type="tel" id="phone" placeholder="+254..." required></div>
+                <div class="input-group"><label>Email Address</label><input type="email" id="email" placeholder="student@mist.ac.ke" required></div>
+                <div class="input-group"><label>Guardian's Name</label><input type="text" id="guardianName" placeholder="Name"></div>
+                <div class="input-group"><label>Guardian's Contact</label><input type="tel" id="guardianContact" placeholder="+254..."></div>
+                
+                <div class="input-group">
+                    <label>Gender</label>
+                    <select id="gender" required>
+                        <option value="" disabled selected>Select</option>
+                        <option value="Male">Male</option>
+                        <option value="Female">Female</option>
+                    </select>
+                </div>
+
+                <div class="input-group">
+                    <label>KCSE Grade</label>
+                    <select id="grade" required>
+                        <option value="" disabled selected>Select Grade</option>
+                        <option value="A">A</option>
+                        <option value="A-">A-</option>
+                        <option value="B+">B+</option>
+                        <option value="B">B</option>
+                        <option value="B-">B-</option>
+                        <option value="C+">C+</option>
+                        <option value="C">C</option>
+                        <option value="C-">C-</option>
+                        <option value="D+">D+</option>
+                        <option value="D">D</option>
+                        <option value="D-">D-</option>
+                        <option value="E">E</option>
+                    </select>
+                </div>
+
+                <div class="input-group">
+                    <label>Course Type</label>
+                    <select id="courseType" onchange="updateCourseList()" required>
+                        <option value="" disabled selected>Select Type</option>
+                        <option value="long">Long Courses (Diploma/Certificate)</option>
+                        <option value="short">Short Courses (Professional)</option>
+                    </select>
+                </div>
+
+                <div class="input-group" id="courseListGroup" style="display: none;">
+                    <label>Select Course</label>
+                    <select id="specificCourse" required></select>
+                </div>
+
+                <div class="input-group">
+                    <label>Mode Of Study</label>
+                    <select id="modeOfStudy" required>
+                        <option value="" disabled selected>Select Mode</option>
+                        <option value="Full Time">Full Time</option>
+                        <option value="Part Time">Part Time</option>
+                        <option value="Virtual Learning">Virtual Learning</option>
+                    </select>
+                </div>
+
+                <div class="input-group"><label>Hobbies / Interests</label><input type="text" id="hobbies" placeholder="e.g. Coding, Music"></div>
+
+                <div class="input-group">
+                    <label>How Did You Know About MIST?</label>
+                    <select id="discovery" required>
+                        <option value="" disabled selected>How did you know about us?</option>
+                        <option value="Website">Website</option>
+                        <option value="Social Media">Social Media</option>
+                        <option value="Friend">Friend</option>
+                        <option value="Family">Family</option>
+                        <option value="Advertisement">Advertisement</option>
+                        <option value="Other">Other</option>
+                    </select>
+                </div>
+
+                <button type="submit" class="submit-btn">Register</button>
+
+                <div class="site-link-container">
+    <a href="https://mist.ac.ke" class="official-site-link">
+        ← Back to Official MIST Website
+    </a>
+</div>
+
+</div>
+
+                <div class="gallery">
+                    <img src="graduation.jpg" alt="Graduation">
+                    <img src="school building.jpg" alt="Campus">
+                    <img src="students.jpg" alt="Students">
+                    <img src="library.jpg" alt="Library">
+                </div>
+
+            </form>
+        </div>
+    </div>
+
+    <div class="contact-bubble" id="mainBubble">?
+        <div class="contact-card" id="contactCard">
+            <h4 style="color:#4CAF50; margin:0 0 10px 0;">Contact Us:</h4>
+            <p style="font-size:13px;">📞 +254 700 904 523</p>
+            <p style="font-size:13px;">✉️ <a href="mailto:info@mist.ac.ke" style="color:#4CAF50">info@mist.ac.ke</a></p>
+            <p style="font-size:13px;">📍 Nakuru, Kenya</p>
+        </div>
+    </div>
+
+    <script>
+        function loginAdmin() {
+    document.getElementById('loginModal').style.display = 'flex';
+    document.getElementById('adminUser').focus();
+}
+
+function closeLogin() {
+    document.getElementById('loginModal').style.display = 'none';
+}
+
+function validateAdmin() {
+    const user = document.getElementById('adminUser').value;
+    const pass = document.getElementById('adminPass').value;
+
+    if (user === "admin" && pass === "MIST2026") {
+        window.location.href = "admin.html";
+    } else {
+        alert("Invalid Credentials. Please try again.");
+        // Optional: clear the password field on fail
+        document.getElementById('adminPass').value = "";
+    }
+}
+
+// Allow login by pressing "Enter" key
+document.getElementById('loginModal').addEventListener('keypress', function (e) {
+    if (e.key === 'Enter') {
+        validateAdmin();
+    }
+});
+
+        function updateCourseList() {
+            const type = document.getElementById('courseType').value;
+            const listGroup = document.getElementById('courseListGroup');
+            const courseDropdown = document.getElementById('specificCourse');
+            const courses = {
+                long: ["-- SCHOOL OF COMPUTING --", "Diploma in Software Engineering", "Diploma in ICT", "Certificate in ICT", "Certificate in Computer Science", "-- SCHOOL OF ENGINEERING --", "Diploma in Electrical Engineering", "Diploma in Automotive Engineering", "-- SCHOOL OF BUSINESS --", "Diploma in Business Management", "Diploma in Accounting"],
+                short: ["-- PROFESSIONAL IT --", "CCNA", "Cyber Security", "Web Design", "Graphic Design", "CCTV Installation", "-- BUSINESS --", "Digital Marketing", "QuickBooks"]
+            };
+            courseDropdown.innerHTML = '<option value="" disabled selected>Select Course</option>';
+            if (type && courses[type]) {
+                listGroup.style.display = "flex";
+                courses[type].forEach(c => {
+                    let opt = document.createElement("option");
+                    opt.text = c; 
+                    if (c.startsWith("--")) { opt.disabled = true; opt.style.color = "#4CAF50"; }
+                    else { opt.value = c; }
+                    courseDropdown.add(opt);
+                });
+            } else { listGroup.style.display = "none"; }
+        }
+
+        document.getElementById('studentForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const student = {
+                id: `MIST/${new Date().getFullYear()}/${Math.floor(Math.random()*9000)+1000}`,
+                name: document.getElementById('studentName').value,
+                phone: document.getElementById('phone').value,
+                email: document.getElementById('email').value,
+                guardian: document.getElementById('guardianName').value || "N/A",
+                gPhone: document.getElementById('guardianContact').value || "N/A",
+                gender: document.getElementById('gender').value,
+                grade: document.getElementById('grade').value,
+                courseType: document.getElementById('courseType').value,
+                course: document.getElementById('specificCourse').value || "N/A",
+                mode: document.getElementById('modeOfStudy').value,
+                hobbies: document.getElementById('hobbies').value || "None",
+                discovery: document.getElementById('discovery').value
+            };
+            let students = JSON.parse(localStorage.getItem('mist_students')) || [];
+            students.push(student);
+            localStorage.setItem('mist_students', JSON.stringify(students));
+            alert("Success! Registered ID: " + student.id);
+            this.reset();
+            document.getElementById('courseListGroup').style.display = "none";
+        });
+
+        const bubble = document.getElementById('mainBubble');
+        const card = document.getElementById('contactCard');
+        bubble.onclick = (e) => { e.stopPropagation(); card.classList.toggle('show-card'); }
+        document.onclick = () => card.classList.remove('show-card');
+
+        function validateAdmin() {
+    const userField = document.getElementById('adminUser');
+    const passField = document.getElementById('adminPass');
+    const errorMsg = document.getElementById('loginErrorMsg');
+
+    const user = userField.value;
+    const pass = passField.value;
+
+    if (user === "admin" && pass === "MIST2026") {
+        window.location.href = "admin.html";
+    } else {
+        // Show the red error message
+        errorMsg.style.display = "block";
+        
+        // Make the bars red
+        userField.classList.add('error');
+        passField.classList.add('error');
+
+        // Optional: Clear the password so they can try again
+        passField.value = "";
+        
+        // Reset the red bars when the user starts typing again
+        userField.oninput = () => {
+            userField.classList.remove('error');
+            passField.classList.remove('error');
+            errorMsg.style.display = "none";
+        };
+        passField.oninput = () => {
+            userField.classList.remove('error');
+            passField.classList.remove('error');
+            errorMsg.style.display = "none";
+        };
+    }
+}
+    </script>
+</body>
+</html>

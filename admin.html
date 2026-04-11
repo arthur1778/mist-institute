@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MIST | Admin Portal</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body { margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif; background: #f4f7f6; min-height: 100vh; display: flex; flex-direction: column; }
+        
+        /* HEADER */
+        header {
+            background: linear-gradient(135deg, #2e7d32 0%, #1b5e20 100%);
+            color: white; padding: 15px 40px; display: flex; align-items: center;
+            justify-content: space-between; box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+        .header-left { display: flex; align-items: center; gap: 15px; }
+        .logo-circle { width: 45px; height: 45px; background: white; border-radius: 50%; padding: 5px; object-fit: contain; }
+
+        /* CENTERED SEARCH */
+        .search-container { position: relative; width: 35%; }
+        #searchInput {
+            width: 100%; padding: 10px 20px 10px 40px; border-radius: 25px;
+            border: none; outline: none; background: rgba(255, 255, 255, 0.15);
+            color: white; font-size: 14px;
+        }
+        #searchInput::placeholder { color: rgba(255,255,255,0.7); }
+        .search-icon { position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: white; }
+
+        /* ACTION AREA */
+        .header-actions { display: flex; align-items: center; gap: 20px; }
+        .stats-bubble { background: white; padding: 4px 12px; border-radius: 20px; font-weight: bold; font-size: 14px; color: #333; }
+        .count-num { color: #2e7d32; }
+        .icon-btn { color: white; font-size: 18px; cursor: pointer; transition: 0.2s; }
+
+        /* SETTINGS DROPDOWN */
+        .settings-menu {
+            display: none; position: absolute; top: 35px; right: 0;
+            background: white; border-radius: 5px; box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            z-index: 100; min-width: 140px;
+        }
+        .settings-menu button { width: 100%; padding: 12px; border: none; background: none; text-align: left; cursor: pointer; color: #333; }
+        .settings-menu button:hover { background: #f9f9f9; }
+        .show { display: block; }
+
+        /* MINIMALIST LOGOUT MODAL */
+        .modal-overlay {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.4); backdrop-filter: blur(3px);
+            z-index: 9999; justify-content: center; align-items: center;
+        }
+        .modal-box {
+            background: white; padding: 30px; border-radius: 15px; width: 320px;
+            text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            animation: popIn 0.3s ease-out;
+        }
+        @keyframes popIn { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+        .modal-box h3 { margin: 0 0 15px 0; color: #2c3e50; font-size: 18px; }
+        .modal-btns { display: flex; gap: 10px; justify-content: center; margin-top: 20px; }
+        .m-btn { padding: 10px 25px; border-radius: 8px; border: none; cursor: pointer; font-weight: bold; transition: 0.2s; }
+        .btn-stay { background: #eee; color: #555; }
+        .btn-logout { background: #ff4757; color: white; }
+        .m-btn:hover { opacity: 0.8; }
+
+        /* TABLE */
+        main { padding: 30px; flex: 1; overflow-x: auto; }
+        .table-container { background: white; border-radius: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); overflow: hidden; }
+        table { width: 100%; border-collapse: collapse; min-width: 1200px; }
+        th { background: #2c3e50; color: white; padding: 15px; text-align: left; font-size: 12px; text-transform: uppercase; }
+        td { padding: 12px 15px; border-bottom: 1px solid #eee; font-size: 13px; color: #333; }
+        .id-badge { background: #e8f5e9; color: #2e7d32; padding: 3px 7px; border-radius: 4px; font-weight: bold; }
+        .delete-btn { color: #ff4757; cursor: pointer; background: none; border: none; }
+
+        /* FOOTER */
+        footer { background: #2c3e50; color: white; text-align: center; padding: 15px; font-size: 12px; }
+        </style>
+</head>
+<body>
+
+    <div class="modal-overlay" id="logoutModal">
+        <div class="modal-box">
+            <h3>Are you sure you want to logout?</h3>
+            <div class="modal-btns">
+                <button class="m-btn btn-logout" onclick="confirmLogout()">Yes, Logout</button>
+                <button class="m-btn btn-stay" onclick="closeModal()">Stay</button>
+            </div>
+        </div>
+    </div>
+
+    <header>
+        <div class="header-left">
+            <img src="logo(1).png" alt="Logo" class="logo-circle">
+            <h2 style="margin:0;">MIST Registry</h2>
+        </div>
+
+        <div class="search-container">
+            <i class="fas fa-search search-icon"></i>
+            <input type="text" id="searchInput" onkeyup="searchTable()" placeholder="Search students...">
+        </div>
+
+        <div class="header-actions">
+            <div class="stats-bubble">Students: <span id="recordCount" class="count-num">0</span></div>
+            <i class="fas fa-file-excel icon-btn" title="Export" onclick="exportToExcel()"></i>
+            <i class="fas fa-print icon-btn" title="Print" onclick="window.print()"></i>
+            
+            <div style="position: relative;">
+                <i class="fas fa-cog icon-btn" onclick="toggleSettings()"></i>
+                <div id="settingsMenu" class="settings-menu">
+                    <button onclick="openModal()" style="color: #ff4757;"><i class="fas fa-sign-out-alt"></i> Logout System</button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <div class="table-container">
+            <table id="adminTable">
+                <thead>
+                    <tr>
+                        <th>Reg ID</th>
+                        <th>Student Name</th>
+                        <th>Phone</th>
+                        <th>Email</th>
+                        <th>Gender</th>
+                        <th>Grade</th>
+                        <th>Course</th>
+                        <th>Mode</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody id="tableBody"></tbody>
+            </table>
+        </div>
+    </main>
+
+    <footer>
+        &copy; 2026 Musketeers Institute of Science and Technology. All Rights Reserved.
+    </footer>
+
+    <script>
+        function loadRegistry() {
+            const tableBody = document.getElementById('tableBody');
+            let students = JSON.parse(localStorage.getItem('mist_students')) || [];
+            document.getElementById('recordCount').innerText = students.length;
+            tableBody.innerHTML = students.length === 0 ? "<tr><td colspan='9' style='text-align:center;'>No records found.</td></tr>" : "";
+
+            students.forEach((s, index) => {
+                tableBody.innerHTML += `
+                    <tr>
+                        <td><span class="id-badge">${s.id}</span></td>
+                        <td><b>${s.name}</b></td>
+                        <td>${s.phone}</td>
+                        <td>${s.email}</td>
+                        <td>${s.gender}</td>
+                        <td>${s.grade}</td>
+                        <td>${s.course}</td>
+                        <td>${s.mode}</td>
+                        <td><button class="delete-btn" onclick="deleteStudent(${index})"><i class="fas fa-trash"></i></button></td>
+                    </tr>`;
+            });
+        }
+
+        // Custom Modal Logic
+        function openModal() { document.getElementById('logoutModal').style.display = 'flex'; }
+        function closeModal() { document.getElementById('logoutModal').style.display = 'none'; }
+        function confirmLogout() { window.location.href = "index.html"; }
+
+        function toggleSettings() { document.getElementById("settingsMenu").classList.toggle("show"); }
+
+        function deleteStudent(index) {
+            if(confirm("Confirm deletion?")) {
+                let students = JSON.parse(localStorage.getItem('mist_students'));
+                students.splice(index, 1);
+                localStorage.setItem('mist_students', JSON.stringify(students));
+                loadRegistry();
+            }
+        }
+
+        function searchTable() {
+            let input = document.getElementById("searchInput").value.toUpperCase();
+            let tr = document.getElementById("tableBody").getElementsByTagName("tr");
+            for (let i = 0; i < tr.length; i++) {
+                let txt = tr[i].innerText;
+                tr[i].style.display = txt.toUpperCase().indexOf(input) > -1 ? "" : "none";
+            }
+        }
+
+        function exportToExcel() {
+            let students = JSON.parse(localStorage.getItem('mist_students')) || [];
+            if (students.length === 0) return alert("No data!");
+            let csv = "ID,Name,Phone,Email,Gender,Grade,Course,Mode\n";
+            students.forEach(s => csv += `${s.id},${s.name},${s.phone},${s.email},${s.gender},${s.grade},${s.course},${s.mode}\n`);
+            let link = document.createElement('a');
+            link.href = 'data:text/csv;charset=utf-8,' + encodeURI(csv);
+            link.download = 'MIST_Student_Registry.csv';
+            link.click();
+        }
+
+        window.onclick = function(e) { 
+            if (!e.target.matches('.fa-cog')) { document.getElementById("settingsMenu").classList.remove('show'); }
+        }
+        window.onload = loadRegistry;
+    </script>
+</body>
+</html>
