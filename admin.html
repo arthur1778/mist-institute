@@ -28,7 +28,7 @@
             display: flex; flex-direction: column; align-items: center; border-left: 5px solid #2e7d32;
         }
         .stat-card i { font-size: 24px; color: #2e7d32; margin-bottom: 10px; }
-        .stat-card h4 { margin: 0; color: #7f8c8d; font-size: 14px; text-transform: uppercase; }
+        .stat-card h4 { margin: 0; color: #7f8c8d; font-size: 14px; text-transform: uppercase; text-align: center; }
         .stat-card .stat-value { font-size: 24px; font-weight: bold; color: #2c3e50; margin-top: 5px; }
 
         /* SEARCH & ACTIONS */
@@ -107,14 +107,14 @@
                 <div class="stat-value" id="totalCount">0</div>
             </div>
             <div class="stat-card" style="border-left-color: #3498db;">
-                <i class="fas fa-laptop-code"></i>
-                <h4>IT Students</h4>
-                <div class="stat-value" id="itCount">0</div>
+                <i class="fas fa-calendar-alt"></i>
+                <h4>Long Course Students</h4>
+                <div class="stat-value" id="longCount">0</div>
             </div>
             <div class="stat-card" style="border-left-color: #f1c40f;">
-                <i class="fas fa-briefcase"></i>
-                <h4>Business Students</h4>
-                <div class="stat-value" id="bizCount">0</div>
+                <i class="fas fa-bolt"></i>
+                <h4>Short Course Students</h4>
+                <div class="stat-value" id="shortCount">0</div>
             </div>
             <div class="stat-card" style="border-left-color: #e67e22;">
                 <i class="fas fa-graduation-cap"></i>
@@ -167,19 +167,20 @@
                 tableBody.innerHTML = ""; 
                 
                 if (!students) {
-                    ["totalCount", "itCount", "bizCount", "qualifiedCount"].forEach(id => document.getElementById(id).innerText = "0");
+                    ["totalCount", "longCount", "shortCount", "qualifiedCount"].forEach(id => document.getElementById(id).innerText = "0");
                     tableBody.innerHTML = "<tr><td colspan='10' style='text-align:center;'>No records found.</td></tr>";
                     return;
                 }
 
                 const keys = Object.keys(students);
-                let itCount = 0, bizCount = 0, qualifiedCount = 0;
+                let longCount = 0, shortCount = 0, qualifiedCount = 0;
                 const topGrades = ["A", "A-", "B+", "B", "B-", "C+"];
 
                 keys.forEach((key) => {
                     const s = students[key];
-                    if(s.course && (s.course.includes("ICT") || s.course.includes("Software"))) itCount++;
-                    if(s.course && (s.course.includes("Business") || s.course.includes("Accounting"))) bizCount++;
+                    
+                    if(s.courseType === "long") longCount++;
+                    if(s.courseType === "short") shortCount++;
                     if(topGrades.includes(s.grade)) qualifiedCount++;
 
                     tableBody.innerHTML += `
@@ -198,8 +199,8 @@
                 });
 
                 document.getElementById('totalCount').innerText = keys.length;
-                document.getElementById('itCount').innerText = itCount;
-                document.getElementById('bizCount').innerText = bizCount;
+                document.getElementById('longCount').innerText = longCount;
+                document.getElementById('shortCount').innerText = shortCount;
                 document.getElementById('qualifiedCount').innerText = qualifiedCount;
             });
         }
@@ -221,8 +222,23 @@
             }
         }
 
+        function exportToExcel() {
+            database.ref('mist_students').once('value').then((snapshot) => {
+                const students = snapshot.val();
+                if (!students) return alert("No data to export!");
+                let csv = "ID,Name,Phone,Email,Gender,Grade,Course,Mode\n";
+                Object.values(students).forEach(s => {
+                    csv += `${s.id},${s.name},${s.phone},${s.email},${s.gender},${s.grade},${s.course},${s.mode}\n`;
+                });
+                let link = document.createElement('a');
+                link.href = 'data:text/csv;charset=utf-8,' + encodeURI(csv);
+                link.download = 'MIST_Student_Registry.csv';
+                link.click();
+            });
+        }
+
         function generateLetter(key) {
-            alert("Phase 2: Letter Generation coming up next!");
+            alert("Phase 2: Letter Generation starting soon!");
         }
 
         window.onload = loadRegistry;
