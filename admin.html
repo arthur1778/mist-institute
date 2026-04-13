@@ -63,16 +63,19 @@
         /* MODAL */
         .modal-overlay {
             display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0, 0, 0, 0.4); z-index: 9999; justify-content: center; align-items: center;
+            background: rgba(0, 0, 0, 0.6); z-index: 9999; justify-content: center; align-items: center;
         }
-        .modal-box { background: white; padding: 30px; border-radius: 15px; text-align: center; }
+        .modal-box { background: white; padding: 35px; border-radius: 15px; text-align: center; max-width: 350px; width: 90%; }
+        .modal-box h3 { margin-top: 0; color: #2c3e50; }
+        .modal-btns { display: flex; gap: 10px; justify-content: center; margin-top: 20px; }
+        
+        .btn-confirm { background: #ff4757; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; font-weight: bold; }
+        .btn-cancel { background: #bdc3c7; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; font-weight: bold; }
+
         footer { background: #2c3e50; color: white; text-align: center; padding: 15px; font-size: 12px; }
 
-        /* PRINT HIDE */
         @media print {
-            header, .stats-grid, .search-container, .header-actions, footer, .delete-btn { display: none !important; }
-            main { padding: 0; }
-            .table-container { box-shadow: none; }
+            header, .stats-grid, .search-container, .header-actions, footer, .delete-btn, .letter-btn { display: none !important; }
         }
     </style>
 </head>
@@ -80,9 +83,12 @@
 
     <div class="modal-overlay" id="logoutModal">
         <div class="modal-box">
-            <h3>Are you sure you want to logout?</h3>
-            <button onclick="confirmLogout()">Yes, Logout</button>
-            <button onclick="closeModal()">Stay</button>
+            <h3>Confirm Logout</h3>
+            <p>Are you sure you want to exit the system?</p>
+            <div class="modal-btns">
+                <button class="btn-confirm" onclick="confirmLogout()">Yes, Logout</button>
+                <button class="btn-cancel" onclick="closeModal()">Stay</button>
+            </div>
         </div>
     </div>
 
@@ -101,7 +107,7 @@
             <div style="position: relative;">
                 <i class="fas fa-cog icon-btn" onclick="toggleSettings()"></i>
                 <div id="settingsMenu" class="settings-menu">
-                    <button onclick="openModal()" style="color: #ff4757;">Logout System</button>
+                    <button onclick="openModal()" style="color: #ff4757;"><i class="fas fa-sign-out-alt"></i> Logout System</button>
                 </div>
             </div>
         </div>
@@ -186,7 +192,6 @@
 
                 keys.forEach((key) => {
                     const s = students[key];
-                    
                     if(s.courseType === "long") longCount++;
                     if(s.courseType === "short") shortCount++;
                     if(topGrades.includes(s.grade)) qualifiedCount++;
@@ -214,7 +219,7 @@
         }
 
         function deleteStudent(key) {
-            if(confirm("Confirm deletion?")) database.ref('mist_students').child(key).remove();
+            if(confirm("Permanently delete this record?")) database.ref('mist_students').child(key).remove();
         }
 
         function toggleSettings() { document.getElementById("settingsMenu").classList.toggle("show"); }
@@ -260,54 +265,24 @@
                             .letter-header { text-align: center; border-bottom: 2px solid #2e7d32; padding-bottom: 10px; margin-bottom: 30px; }
                             .logo-img { width: 80px; }
                             .school-name { font-size: 24px; font-weight: bold; color: #1b5e20; margin: 5px 0; }
-                            .contact-info { font-size: 12px; color: #666; }
                             .date-row { text-align: right; margin-bottom: 20px; font-weight: bold; }
-                            .student-details { margin-bottom: 30px; }
                             .subject { text-align: center; text-decoration: underline; font-weight: bold; margin-bottom: 20px; text-transform: uppercase; }
-                            .signature-space { margin-top: 50px; }
-                            .footer { margin-top: 100px; font-size: 11px; text-align: center; border-top: 1px solid #eee; padding-top: 10px; }
                             @media print { .no-print { display: none; } }
                             .print-btn { background: #2e7d32; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; float: right; }
                         </style>
                     </head>
                     <body>
-                        <button class="print-btn no-print" onclick="window.print()">Print Letter</button>
+                        <button class="print-btn no-print" onclick="window.print()">Print/Save as PDF</button>
                         <div class="letter-header">
-                            <img src="logo(1).png" class="logo-img" alt="MIST Logo">
+                            <img src="logo(1).png" class="logo-img">
                             <div class="school-name">MUSKETEERS INSTITUTE OF SCIENCE AND TECHNOLOGY</div>
-                            <div class="contact-info">P.O. Box 123-4567, Science Hub | Email: admissions@mist.ac.ke | Web: www.mist.ac.ke</div>
                         </div>
-
                         <div class="date-row">Date: ${date}</div>
-
-                        <div class="student-details">
-                            <strong>TO: ${s.name.toUpperCase()}</strong><br>
-                            <strong>REG NO: ${s.id}</strong><br>
-                            <strong>ADMISSION TYPE: ${s.mode}</strong>
-                        </div>
-
+                        <p><strong>TO: ${s.name.toUpperCase()}</strong><br><strong>REG NO: ${s.id}</strong></p>
                         <div class="subject">RE: PROVISIONAL ADMISSION FOR ${s.course.toUpperCase()}</div>
-
                         <p>Dear ${s.name},</p>
-                        
-                        <p>We are pleased to inform you that your application for admission to <strong>Musketeers Institute of Science and Technology (MIST)</strong> has been successful. You have been offered a place to pursue a <strong>${s.courseType === 'long' ? 'Long-Term' : 'Short-Term'}</strong> course in <strong>${s.course}</strong>.</p>
-
-                        <p>Your admission is based on the academic qualifications provided during registration. Please note that you will be required to present original copies of your certificates and identification documents upon reporting to the campus.</p>
-
-                        <p>Information regarding fee structures, reporting dates, and campus regulations will be sent to your registered email address (<em>${s.email}</em>) in due course.</p>
-
-                        <p>We look forward to welcoming you to the MIST community and wish you the very best in your academic journey.</p>
-
-                        <div class="signature-space">
-                            <p>Yours Faithfully,</p>
-                            <br><br>
-                            <strong>The Registrar, Academics</strong><br>
-                            Musketeers Institute of Science and Technology
-                        </div>
-
-                        <div class="footer">
-                            This is a computer-generated document and is valid without a physical signature.
-                        </div>
+                        <p>We are pleased to inform you that your application to <strong>MIST</strong> has been successful for the <strong>${s.course}</strong> program.</p>
+                        <p>Yours Faithfully,<br><br><strong>The Registrar, Academics</strong></p>
                     </body>
                     </html>
                 `);
