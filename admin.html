@@ -22,6 +22,27 @@
         .header-left { display: flex; align-items: center; gap: 15px; }
         .logo-circle { width: 45px; height: 45px; background: white; border-radius: 50%; padding: 5px; object-fit: contain; }
 
+        /* DASHBOARD STATS LAYOUT */
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+    margin-bottom: 30px;
+}
+.stat-card {
+    background: white;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    border-left: 5px solid #2e7d32;
+}
+.stat-card i { font-size: 24px; color: #2e7d32; margin-bottom: 10px; }
+.stat-card h4 { margin: 0; color: #7f8c8d; font-size: 14px; text-transform: uppercase; }
+.stat-card .stat-value { font-size: 24px; font-weight: bold; color: #2c3e50; margin-top: 5px; }
+
         /* CENTERED SEARCH */
         .search-container { position: relative; width: 35%; }
         #searchInput {
@@ -118,6 +139,29 @@
     </header>
 
     <main>
+        <div class="stats-grid">
+    <div class="stat-card">
+        <i class="fas fa-users"></i>
+        <h4>Total Applicants</h4>
+        <div class="stat-value" id="totalCount">0</div>
+    </div>
+    <div class="stat-card" style="border-left-color: #3498db;">
+        <i class="fas fa-laptop-code"></i>
+        <h4>IT Students</h4>
+        <div class="stat-value" id="itCount">0</div>
+    </div>
+    <div class="stat-card" style="border-left-color: #f1c40f;">
+        <i class="fas fa-briefcase"></i>
+        <h4>Business Students</h4>
+        <div class="stat-value" id="bizCount">0</div>
+    </div>
+    <div class="stat-card" style="border-left-color: #e67e22;">
+        <i class="fas fa-venus-mars"></i>
+        <h4>Female Ratio</h4>
+        <div class="stat-value" id="femaleRatio">0%</div>
+    </div>
+</div>
+
         <div class="table-container">
             <table id="adminTable">
                 <thead>
@@ -159,40 +203,53 @@
 
         // LIVE REAL-TIME REGISTRY LISTENER
         function loadRegistry() {
-            const tableBody = document.getElementById('tableBody');
-            
-            // Reference to the 'mist_students' node in your Firebase Realtime Database
-            database.ref('mist_students').on('value', (snapshot) => {
-                const students = snapshot.val();
-                tableBody.innerHTML = ""; // Clear existing rows
-                
-                if (!students) {
-                    tableBody.innerHTML = "<tr><td colspan='9' style='text-align:center;'>No records found in the cloud.</td></tr>";
-                    document.getElementById('recordCount').innerText = "0";
-                    return;
-                }
-
-                const keys = Object.keys(students);
-                document.getElementById('recordCount').innerText = keys.length;
-
-                keys.forEach((key) => {
-                    const s = students[key];
-                    tableBody.innerHTML += `
-                        <tr>
-                            <td><span class="id-badge">${s.id}</span></td>
-                            <td><b>${s.name}</b></td>
-                            <td>${s.phone}</td>
-                            <td>${s.email}</td>
-                            <td>${s.gender}</td>
-                            <td>${s.grade}</td>
-                            <td>${s.course}</td>
-                            <td>${s.mode}</td>
-                            <td><button class="delete-btn" onclick="deleteStudent('${key}')"><i class="fas fa-trash"></i></button></td>
-                        </tr>`;
-                });
-            });
+    const tableBody = document.getElementById('tableBody');
+    
+    database.ref('mist_students').on('value', (snapshot) => {
+        const students = snapshot.val();
+        tableBody.innerHTML = ""; 
+        
+        if (!students) {
+            updateDashboard(0, 0, 0, 0);
+            return;
         }
 
+        const keys = Object.keys(students);
+        let itStudents = 0;
+        let bizStudents = 0;
+        let femaleCount = 0;
+
+        keys.forEach((key) => {
+            const s = students[key];
+            
+            // Logic for Stats
+            if(s.courseType === "long" && s.course.includes("ICT") || s.course.includes("Software")) itStudents++;
+            if(s.courseType === "short" || s.course.includes("Business")) bizStudents++;
+            if(s.gender === "Female") femaleCount++;
+
+            // Draw the table (keep your existing table row code here)
+            tableBody.innerHTML += `
+                <tr>
+                    <td><span class="id-badge">${s.id}</span></td>
+                    <td><b>${s.name}</b></td>
+                    <td>${s.phone}</td>
+                    <td>${s.email}</td>
+                    <td>${s.gender}</td>
+                    <td>${s.grade}</td>
+                    <td>${s.course}</td>
+                    <td>${s.mode}</td>
+                    <td><button class="delete-btn" onclick="deleteStudent('${key}')"><i class="fas fa-trash"></i></button></td>
+                </tr>`;
+        });
+
+        // Update the Cards
+        document.getElementById('totalCount').innerText = keys.length;
+        document.getElementById('itCount').innerText = itStudents;
+        document.getElementById('bizCount').innerText = bizStudents;
+        const ratio = ((femaleCount / keys.length) * 100).toFixed(0);
+        document.getElementById('femaleRatio').innerText = ratio + "%";
+    });
+}
         // Deletes from Firebase Cloud
         function deleteStudent(firebaseKey) {
             if(confirm("Confirm deletion from cloud?")) {
