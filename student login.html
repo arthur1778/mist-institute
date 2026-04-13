@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MIST | Student Portal</title>
+    <link rel="icon" type="image/png" href="logo(1).png">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
+
+    <style>
+        body { 
+            margin: 0; font-family: 'Segoe UI', sans-serif; 
+            background: linear-gradient(135deg, #2e7d32 0%, #1b5e20 100%);
+            height: 100vh; display: flex; justify-content: center; align-items: center;
+        }
+        .login-card {
+            background: white; padding: 40px; border-radius: 15px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2); width: 100%; max-width: 400px; text-align: center;
+        }
+        .logo-img { width: 80px; margin-bottom: 20px; }
+        h2 { color: #1b5e20; margin-bottom: 10px; }
+        p { color: #666; font-size: 14px; margin-bottom: 25px; }
+        input {
+            width: 100%; padding: 12px; margin-bottom: 15px; border: 1px solid #ddd;
+            border-radius: 8px; box-sizing: border-box; outline: none;
+        }
+        input:focus { border-color: #2e7d32; }
+        .login-btn {
+            width: 100%; padding: 12px; border: none; border-radius: 8px;
+            background: #2e7d32; color: white; font-weight: bold; cursor: pointer; transition: 0.3s;
+        }
+        .login-btn:hover { background: #1b5e20; }
+        #errorMsg { color: #ff4757; font-size: 13px; margin-top: 10px; display: none; }
+    </style>
+</head>
+<body>
+
+    <div class="login-card" id="loginBox">
+        <img src="logo(1).png" alt="MIST Logo" class="logo-img">
+        <h2>Student Portal</h2>
+        <p>Enter your details to access your admission letter</p>
+        
+        <input type="email" id="studentEmail" placeholder="Registered Email Address">
+        <input type="text" id="studentID" placeholder="Registration ID (e.g. MIST-123)">
+        
+        <button class="login-btn" onclick="studentLogin()">Access My Portal</button>
+        <div id="errorMsg">Invalid credentials. Please try again.</div>
+    </div>
+
+    <div class="login-card" id="studentDash" style="display: none;">
+        <img src="logo(1).png" alt="MIST Logo" class="logo-img">
+        <h2 id="welcomeName">Welcome!</h2>
+        <p>Your application was successful. You can now download your official admission letter below.</p>
+        
+        <button class="login-btn" style="background: #3498db;" onclick="printMyLetter()">
+            <i class="fas fa-file-download"></i> Download Admission Letter
+        </button>
+        <br><br>
+        <a href="#" onclick="location.reload()" style="color: #888; text-decoration: none; font-size: 12px;">Logout</a>
+    </div>
+
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyAnnKPtJdIYbbrCRByrTgY1wDN13sIEgjk",
+            authDomain: "mist-institute.firebaseapp.com",
+            databaseURL: "https://mist-institute-default-rtdb.firebaseio.com/",
+            projectId: "mist-institute",
+            storageBucket: "mist-institute.firebasestorage.app",
+            messagingSenderId: "934136067316",
+            appId: "1:934136067316:web:62c0ec82aa9eef18471aa1"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+        let loggedInStudent = null;
+
+        function studentLogin() {
+            const email = document.getElementById('studentEmail').value.trim().toLowerCase();
+            const id = document.getElementById('studentID').value.trim().toUpperCase();
+            const error = document.getElementById('errorMsg');
+
+            database.ref('mist_students').once('value', (snapshot) => {
+                const students = snapshot.val();
+                let found = false;
+
+                for (let key in students) {
+                    if (students[key].email.toLowerCase() === email && students[key].id === id) {
+                        loggedInStudent = students[key];
+                        found = true;
+                        break;
+                    }
+                }
+
+                if (found) {
+                    showDashboard();
+                } else {
+                    error.style.display = 'block';
+                }
+            });
+        }
+
+        function showDashboard() {
+            document.getElementById('loginBox').style.display = 'none';
+            document.getElementById('studentDash').style.display = 'block';
+            document.getElementById('welcomeName').innerText = `Welcome, ${loggedInStudent.name}!`;
+        }
+
+        function printMyLetter() {
+            const s = loggedInStudent;
+            const printWindow = window.open('', '_blank');
+            const date = new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
+
+            printWindow.document.write(`
+                <html>
+                <head>
+                    <title>Admission Letter - ${s.name}</title>
+                    <style>
+                        body { font-family: 'Times New Roman', serif; padding: 50px; line-height: 1.6; color: #333; }
+                        .letter-header { text-align: center; border-bottom: 2px solid #2e7d32; padding-bottom: 10px; margin-bottom: 30px; }
+                        .logo-img { width: 80px; }
+                        .school-name { font-size: 24px; font-weight: bold; color: #1b5e20; margin: 5px 0; }
+                        .date-row { text-align: right; margin-bottom: 20px; font-weight: bold; }
+                        .subject { text-align: center; text-decoration: underline; font-weight: bold; margin-bottom: 20px; text-transform: uppercase; }
+                        @media print { .no-print { display: none; } }
+                        .print-btn { background: #2e7d32; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; float: right; }
+                    </style>
+                </head>
+                <body>
+                    <button class="print-btn no-print" onclick="window.print()">Print/Save as PDF</button>
+                    <div class="letter-header">
+                        <img src="logo(1).png" class="logo-img">
+                        <div class="school-name">MUSKETEERS INSTITUTE OF SCIENCE AND TECHNOLOGY</div>
+                    </div>
+                    <div class="date-row">Date: ${date}</div>
+                    <p><strong>TO: ${s.name.toUpperCase()}</strong><br><strong>REG NO: ${s.id}</strong></p>
+                    <div class="subject">RE: PROVISIONAL ADMISSION FOR ${s.course.toUpperCase()}</div>
+                    <p>Dear ${s.name},</p>
+                    <p>We are pleased to inform you that your application to <strong>MIST</strong> has been successful for the <strong>${s.course}</strong> program.</p>
+                    <p>Please present your original documents upon reporting to the campus.</p>
+                    <p>Yours Faithfully,<br><br><strong>The Registrar, Academics</strong></p>
+                </body>
+                </html>
+            `);
+            printWindow.document.close();
+        }
+    </script>
+</body>
+</html>
