@@ -11,28 +11,55 @@
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
 
     <style>
+        :root {
+            --m-green: #1b5e20;
+            --m-accent: #2e7d32;
+        }
         body { 
             margin: 0; font-family: 'Segoe UI', sans-serif; 
-            background: linear-gradient(135deg, #2e7d32 0%, #1b5e20 100%);
-            height: 100vh; display: flex; justify-content: center; align-items: center;
+            background: #f4f7f6;
+            min-height: 100vh; display: flex; justify-content: center; align-items: center;
         }
+        
+        /* LOGIN BOX STYLE */
         .login-card {
             background: white; padding: 40px; border-radius: 15px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.2); width: 100%; max-width: 400px; text-align: center;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1); width: 100%; max-width: 400px; text-align: center;
         }
-        .logo-img { width: 80px; margin-bottom: 20px; }
-        h2 { color: #1b5e20; margin-bottom: 10px; }
-        p { color: #666; font-size: 14px; margin-bottom: 25px; }
+        
+        /* DASHBOARD STYLE (WIDER) */
+        .dash-container {
+            width: 90%; max-width: 1000px; display: none; margin: 20px;
+        }
+        .dash-header {
+            background: white; padding: 30px; border-radius: 15px; text-align: center;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05); margin-bottom: 20px;
+        }
+        
+        .logo-img { width: 70px; margin-bottom: 15px; }
+        h2 { color: var(--m-green); margin-bottom: 10px; }
+        
         input {
             width: 100%; padding: 12px; margin-bottom: 15px; border: 1px solid #ddd;
             border-radius: 8px; box-sizing: border-box; outline: none;
         }
-        input:focus { border-color: #2e7d32; }
-        .login-btn {
-            width: 100%; padding: 12px; border: none; border-radius: 8px;
-            background: #2e7d32; color: white; font-weight: bold; cursor: pointer; transition: 0.3s;
+
+        .btn {
+            padding: 12px 25px; border: none; border-radius: 8px;
+            color: white; font-weight: bold; cursor: pointer; transition: 0.3s;
+            text-decoration: none; display: inline-block; margin: 5px;
         }
-        .login-btn:hover { background: #1b5e20; }
+        .btn-green { background: var(--m-green); }
+        .btn-blue { background: #3498db; }
+        .btn-outline { background: transparent; border: 2px solid var(--m-green); color: var(--m-green); }
+
+        /* PROGRAMMES GRID (Mirrored from Index) */
+        .prog-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; margin-top: 20px; }
+        .prog-card { background: white; padding: 30px; border-radius: 12px; text-align: left; border: 1px solid rgba(0,0,0,0.05); }
+        .prog-card i { font-size: 30px; color: var(--m-green); margin-bottom: 15px; display: block; }
+        .prog-card h3 { margin: 0 0 10px 0; font-size: 18px; }
+        .prog-card p { font-size: 14px; color: #666; margin: 0; }
+
         #errorMsg { color: #ff4757; font-size: 13px; margin-top: 10px; display: none; }
     </style>
 </head>
@@ -41,25 +68,48 @@
     <div class="login-card" id="loginBox">
         <img src="logo(1).png" alt="MIST Logo" class="logo-img">
         <h2>Student Portal</h2>
-        <p>Enter your details to access your admission letter</p>
-        
-        <input type="email" id="studentEmail" placeholder="Registered Email Address">
-        <input type="text" id="studentID" placeholder="Registration ID (e.g. MIST-123)">
-        
-        <button class="login-btn" onclick="studentLogin()">Access My Portal</button>
+        <p>Enter credentials to access your documents</p>
+        <input type="email" id="studentEmail" placeholder="Registered Email">
+        <input type="text" id="studentID" placeholder="Registration ID (MIST-XXXX)">
+        <button class="btn btn-green" style="width:100%" onclick="studentLogin()">Access Portal</button>
         <div id="errorMsg">Invalid credentials. Please try again.</div>
     </div>
 
-    <div class="login-card" id="studentDash" style="display: none;">
-        <img src="logo(1).png" alt="MIST Logo" class="logo-img">
-        <h2 id="welcomeName">Welcome!</h2>
-        <p>Your application was successful. You can now download your official admission letter below.</p>
-        
-        <button class="login-btn" style="background: #3498db;" onclick="printMyLetter()">
-            <i class="fas fa-file-download"></i> Download Admission Letter
-        </button>
-        <br><br>
-        <a href="#" onclick="location.reload()" style="color: #888; text-decoration: none; font-size: 12px;">Logout</a>
+    <div class="dash-container" id="studentDash">
+        <div class="dash-header">
+            <img src="logo(1).png" alt="MIST Logo" class="logo-img">
+            <h2 id="welcomeName">Welcome!</h2>
+            <p>Your admission at MIST is confirmed. Manage your documents below.</p>
+            
+            <div style="margin-top: 20px;">
+                <button class="btn btn-blue" onclick="printMyLetter()">
+                    <i class="fas fa-file-download"></i> Admission Letter
+                </button>
+                <button class="btn btn-green" onclick="showFees()">
+                    <i class="fas fa-money-bill-wave"></i> Fee Structure
+                </button>
+                <button class="btn btn-outline" onclick="location.reload()">Logout</button>
+            </div>
+        </div>
+
+        <h3 style="margin-left: 10px; color: #333;">Explore Our Academic Schools</h3>
+        <div class="prog-grid">
+            <div class="prog-card">
+                <i class="fas fa-microchip"></i>
+                <h3>School of ICT</h3>
+                <p>Advanced Software Engineering, Data Science, and Cybersecurity certifications.</p>
+            </div>
+            <div class="prog-card">
+                <i class="fas fa-tools"></i>
+                <h3>Engineering</h3>
+                <p>Automotive, Electrical, and Mechanical Engineering practical courses.</p>
+            </div>
+            <div class="prog-card">
+                <i class="fas fa-hotel"></i>
+                <h3>Hospitality</h3>
+                <p>World-class Culinary Arts and Institutional Management training.</p>
+            </div>
+        </div>
     </div>
 
     <script>
@@ -95,17 +145,14 @@
                 }
 
                 if (found) {
-                    showDashboard();
+                    document.getElementById('loginBox').style.display = 'none';
+                    document.getElementById('studentDash').style.display = 'block';
+                    document.getElementById('welcomeName').innerText = `Welcome, ${loggedInStudent.name}!`;
+                    document.body.style.alignItems = 'flex-start'; // Adjust layout for dashboard
                 } else {
                     error.style.display = 'block';
                 }
             });
-        }
-
-        function showDashboard() {
-            document.getElementById('loginBox').style.display = 'none';
-            document.getElementById('studentDash').style.display = 'block';
-            document.getElementById('welcomeName').innerText = `Welcome, ${loggedInStudent.name}!`;
         }
 
         function printMyLetter() {
@@ -116,35 +163,61 @@
             printWindow.document.write(`
                 <html>
                 <head>
-                    <title>Admission Letter - ${s.name}</title>
+                    <title>Letter - ${s.name}</title>
                     <style>
-                        body { font-family: 'Times New Roman', serif; padding: 50px; line-height: 1.6; color: #333; }
-                        .letter-header { text-align: center; border-bottom: 2px solid #2e7d32; padding-bottom: 10px; margin-bottom: 30px; }
-                        .logo-img { width: 80px; }
-                        .school-name { font-size: 24px; font-weight: bold; color: #1b5e20; margin: 5px 0; }
-                        .date-row { text-align: right; margin-bottom: 20px; font-weight: bold; }
-                        .subject { text-align: center; text-decoration: underline; font-weight: bold; margin-bottom: 20px; text-transform: uppercase; }
+                        body { font-family: 'Times New Roman', serif; padding: 50px; line-height: 1.6; }
+                        .header { text-align: center; border-bottom: 2px solid #1b5e20; padding-bottom: 10px; }
+                        .school-name { font-size: 22px; font-weight: bold; color: #1b5e20; }
+                        .date { text-align: right; font-weight: bold; margin-top: 20px; }
                         @media print { .no-print { display: none; } }
-                        .print-btn { background: #2e7d32; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; float: right; }
                     </style>
                 </head>
                 <body>
-                    <button class="print-btn no-print" onclick="window.print()">Print/Save as PDF</button>
-                    <div class="letter-header">
-                        <img src="logo(1).png" class="logo-img">
+                    <button class="no-print" onclick="window.print()" style="padding:10px; background:#1b5e20; color:white; border:none; border-radius:5px; cursor:pointer;">Print as PDF</button>
+                    <div class="header">
                         <div class="school-name">MUSKETEERS INSTITUTE OF SCIENCE AND TECHNOLOGY</div>
+                        <p>Nakuru CBD, Kanini Haraka Plaza | info@mist.ac.ke</p>
                     </div>
-                    <div class="date-row">Date: ${date}</div>
-                    <p><strong>TO: ${s.name.toUpperCase()}</strong><br><strong>REG NO: ${s.id}</strong></p>
-                    <div class="subject">RE: PROVISIONAL ADMISSION FOR ${s.course.toUpperCase()}</div>
+                    <div class="date">Date: ${date}</div>
+                    <p><strong>TO: ${s.name.toUpperCase()}</strong><br><strong>ID: ${s.id}</strong></p>
+                    <p style="text-align:center; text-decoration:underline; font-weight:bold;">RE: ADMISSION FOR ${s.course.toUpperCase()}</p>
                     <p>Dear ${s.name},</p>
-                    <p>We are pleased to inform you that your application to <strong>MIST</strong> has been successful for the <strong>${s.course}</strong> program.</p>
-                    <p>Please present your original documents upon reporting to the campus.</p>
-                    <p>Yours Faithfully,<br><br><strong>The Registrar, Academics</strong></p>
+                    <p>We are pleased to offer you a place at MIST for the 2026 academic year. Your selection for the <strong>${s.course}</strong> (${s.mode}) is based on your impressive academic background.</p>
+                    <p>Kindly download the Fee Structure from the student portal to facilitate your registration.</p>
+                    <p>Yours Sincerely,<br><br><strong>Registrar, Academics</strong></p>
                 </body>
                 </html>
             `);
             printWindow.document.close();
+        }
+
+        function showFees() {
+            const s = loggedInStudent;
+            const feeWindow = window.open('', '_blank');
+            feeWindow.document.write(`
+                <html>
+                <head><title>Fee Structure - MIST</title>
+                <style>
+                    body { font-family: sans-serif; padding: 40px; }
+                    table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+                    th, td { border: 1px solid #ddd; padding: 12px; text-align: left; }
+                    th { background: #1b5e20; color: white; }
+                </style></head>
+                <body>
+                    <h2>Fee Structure: ${s.course}</h2>
+                    <p>Student: ${s.name} | ID: ${s.id}</p>
+                    <table>
+                        <tr><th>Description</th><th>Amount (KES)</th></tr>
+                        <tr><td>Tuition Fees (Per Semester)</td><td>25,000</td></tr>
+                        <tr><td>Registration (Once)</td><td>2,000</td></tr>
+                        <tr><td>Library & ICT</td><td>3,500</td></tr>
+                        <tr><td>Activity Fee</td><td>1,500</td></tr>
+                        <tr style="font-weight:bold;"><td>Total Payable</td><td>32,000</td></tr>
+                    </table>
+                    <p style="margin-top:20px;"><i>Note: All fees should be paid via our official bank account or M-Pesa Paybill.</i></p>
+                </body>
+                </html>
+            `);
         }
     </script>
 </body>
