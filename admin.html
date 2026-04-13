@@ -12,7 +12,6 @@
 
     <style>
         body { margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif; background: #f4f7f6; min-height: 100vh; display: flex; flex-direction: column; }
-        
         header {
             background: linear-gradient(135deg, #2e7d32 0%, #1b5e20 100%);
             color: white; padding: 15px 40px; display: flex; align-items: center;
@@ -20,8 +19,6 @@
         }
         .header-left { display: flex; align-items: center; gap: 15px; }
         .logo-circle { width: 45px; height: 45px; background: white; border-radius: 50%; padding: 5px; object-fit: contain; }
-
-        /* DASHBOARD STATS */
         .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-bottom: 30px; }
         .stat-card {
             background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.05);
@@ -29,9 +26,7 @@
         }
         .stat-card i { font-size: 24px; color: #2e7d32; margin-bottom: 10px; }
         .stat-card h4 { margin: 0; color: #7f8c8d; font-size: 14px; text-transform: uppercase; text-align: center; }
-        .stat-card .stat-value { font-size: 24px; font-weight: bold; color: #2c3e50; margin-top: 5px; }
-
-        /* SEARCH & ACTIONS */
+        .stat-card .stat-value { font-size: 22px; font-weight: bold; color: #2c3e50; margin-top: 5px; }
         .search-container { position: relative; width: 35%; }
         #searchInput {
             width: 100%; padding: 10px 20px 10px 40px; border-radius: 25px;
@@ -41,16 +36,12 @@
         .search-icon { position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: white; }
         .header-actions { display: flex; align-items: center; gap: 20px; }
         .icon-btn { color: white; font-size: 18px; cursor: pointer; }
-
-        /* SETTINGS MENU */
         .settings-menu {
             display: none; position: absolute; top: 35px; right: 0; background: white; 
             border-radius: 5px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); z-index: 100; min-width: 140px;
         }
         .settings-menu button { width: 100%; padding: 12px; border: none; background: none; text-align: left; cursor: pointer; }
         .show { display: block; }
-
-        /* TABLE */
         main { padding: 30px; flex: 1; overflow-x: auto; }
         .table-container { background: white; border-radius: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); overflow: hidden; }
         table { width: 100%; border-collapse: collapse; min-width: 1200px; }
@@ -59,24 +50,16 @@
         .id-badge { background: #e8f5e9; color: #2e7d32; padding: 3px 7px; border-radius: 4px; font-weight: bold; }
         .delete-btn { color: #ff4757; cursor: pointer; border: none; background: none; }
         .letter-btn { color: #3498db; cursor: pointer; border: none; background: none; }
-
-        /* MODAL */
         .modal-overlay {
             display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(0, 0, 0, 0.6); z-index: 9999; justify-content: center; align-items: center;
         }
         .modal-box { background: white; padding: 35px; border-radius: 15px; text-align: center; max-width: 350px; width: 90%; }
-        .modal-box h3 { margin-top: 0; color: #2c3e50; }
         .modal-btns { display: flex; gap: 10px; justify-content: center; margin-top: 20px; }
-        
         .btn-confirm { background: #ff4757; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; font-weight: bold; }
         .btn-cancel { background: #bdc3c7; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; font-weight: bold; }
-
         footer { background: #2c3e50; color: white; text-align: center; padding: 15px; font-size: 12px; }
-
-        @media print {
-            header, .stats-grid, .search-container, .header-actions, footer, .delete-btn, .letter-btn { display: none !important; }
-        }
+        @media print { header, .stats-grid, .search-container, .header-actions, footer, .delete-btn, .letter-btn { display: none !important; } }
     </style>
 </head>
 <body>
@@ -102,12 +85,12 @@
             <input type="text" id="searchInput" onkeyup="searchTable()" placeholder="Search students...">
         </div>
         <div class="header-actions">
-            <i class="fas fa-file-excel icon-btn" title="Export" onclick="exportToExcel()"></i>
-            <i class="fas fa-print icon-btn" title="Print" onclick="window.print()"></i>
+            <i class="fas fa-file-excel icon-btn" title="Export CSV" onclick="exportToExcel()"></i>
+            <i class="fas fa-print icon-btn" title="Print Page" onclick="window.print()"></i>
             <div style="position: relative;">
                 <i class="fas fa-cog icon-btn" onclick="toggleSettings()"></i>
                 <div id="settingsMenu" class="settings-menu">
-                    <button onclick="openModal()" style="color: #ff4757;"><i class="fas fa-sign-out-alt"></i> Logout System</button>
+                    <button onclick="openModal()" style="color: #ff4757;"><i class="fas fa-sign-out-alt"></i> Logout</button>
                 </div>
             </div>
         </div>
@@ -122,18 +105,18 @@
             </div>
             <div class="stat-card">
                 <i class="fas fa-calendar-alt"></i>
-                <h4>Long Course Students</h4>
+                <h4>Long Courses</h4>
                 <div class="stat-value" id="longCount">0</div>
             </div>
             <div class="stat-card">
                 <i class="fas fa-bolt"></i>
-                <h4>Short Course Students</h4>
+                <h4>Short Courses</h4>
                 <div class="stat-value" id="shortCount">0</div>
             </div>
             <div class="stat-card">
-                <i class="fas fa-graduation-cap"></i>
-                <h4>Qualified (C+ & Above)</h4>
-                <div class="stat-value" id="qualifiedCount">0</div>
+                <i class="fas fa-hand-holding-usd"></i>
+                <h4>Fees Collected</h4>
+                <div class="stat-value" id="revenueCount">KSh 0</div>
             </div>
         </div>
 
@@ -149,6 +132,7 @@
                         <th>Grade</th>
                         <th>Course</th>
                         <th>Mode</th>
+                        <th>Status</th>
                         <th>Letter</th>
                         <th>Action</th>
                     </tr>
@@ -158,7 +142,7 @@
         </div>
     </main>
 
-    <footer>&copy; 2026 Musketeers Institute of Science and Technology. All Rights Reserved.</footer>
+    <footer>&copy; 2026 Musketeers Institute of Science and Technology.</footer>
 
     <script>
         const firebaseConfig = {
@@ -181,41 +165,55 @@
                 tableBody.innerHTML = ""; 
                 
                 if (!students) {
-                    ["totalCount", "longCount", "shortCount", "qualifiedCount"].forEach(id => document.getElementById(id).innerText = "0");
-                    tableBody.innerHTML = "<tr><td colspan='10' style='text-align:center;'>No records found.</td></tr>";
+                    ["totalCount", "longCount", "shortCount"].forEach(id => document.getElementById(id).innerText = "0");
+                    document.getElementById('revenueCount').innerText = "KSh 0";
+                    tableBody.innerHTML = "<tr><td colspan='11' style='text-align:center;'>No records found.</td></tr>";
                     return;
                 }
 
                 const keys = Object.keys(students);
-                let longCount = 0, shortCount = 0, qualifiedCount = 0;
-                const topGrades = ["A", "A-", "B+", "B", "B-", "C+"];
+                let longCount = 0, shortCount = 0, revenue = 0;
 
                 keys.forEach((key) => {
                     const s = students[key];
+                    const status = s.status || "Pending";
+                    const statusColor = status === "Paid" ? "#2e7d32" : "#f39c12";
+                    
                     if(s.courseType === "long") longCount++;
                     if(s.courseType === "short") shortCount++;
-                    if(topGrades.includes(s.grade)) qualifiedCount++;
+                    if(status === "Paid") revenue += 32000;
 
                     tableBody.innerHTML += `
-<tr>
-    <td><span class="id-badge">${s.id}</span></td>
-    <td><b>${s.name}</b></td>
-    <td>${s.phone}</td>
-    <td>${s.email}</td>
-    <td>${s.gender}</td>
-    <td>${s.grade}</td>
-    <td>${s.course}</td>
-    <td>${s.mode}</td>
-    <td><button class="letter-btn" onclick="generateLetter('${key}')"><i class="fas fa-file-pdf"></i></button></td>
-    <td><button class="delete-btn" onclick="deleteStudent('${key}')"><i class="fas fa-trash"></i></button></td>
-</tr>`;
+                        <tr>
+                            <td><span class="id-badge">${s.id}</span></td>
+                            <td><b>${s.name}</b></td>
+                            <td>${s.phone}</td>
+                            <td>${s.email}</td>
+                            <td>${s.gender}</td>
+                            <td>${s.grade}</td>
+                            <td>${s.course}</td>
+                            <td>${s.mode}</td>
+                            <td>
+                                <select onchange="updateStatus('${key}', this.value)" 
+                                    style="border:none; background:${statusColor}; color:white; border-radius:4px; padding:3px; font-weight:bold; cursor:pointer;">
+                                    <option value="Pending" ${status === 'Pending' ? 'selected' : ''}>Pending</option>
+                                    <option value="Paid" ${status === 'Paid' ? 'selected' : ''}>Paid</option>
+                                </select>
+                            </td>
+                            <td><button class="letter-btn" onclick="generateLetter('${key}')"><i class="fas fa-file-pdf"></i></button></td>
+                            <td><button class="delete-btn" onclick="deleteStudent('${key}')"><i class="fas fa-trash"></i></button></td>
+                        </tr>`;
                 });
 
                 document.getElementById('totalCount').innerText = keys.length;
                 document.getElementById('longCount').innerText = longCount;
                 document.getElementById('shortCount').innerText = shortCount;
-                document.getElementById('qualifiedCount').innerText = qualifiedCount;
+                document.getElementById('revenueCount').innerText = "KSh " + revenue.toLocaleString();
             });
+        }
+
+        function updateStatus(key, newStatus) {
+            database.ref('mist_students').child(key).update({ status: newStatus });
         }
 
         function deleteStudent(key) {
@@ -238,14 +236,13 @@
         function exportToExcel() {
             database.ref('mist_students').once('value').then((snapshot) => {
                 const students = snapshot.val();
-                if (!students) return alert("No data to export!");
-                let csv = "ID,Name,Phone,Email,Gender,Grade,Course,Mode\n";
+                let csv = "ID,Name,Phone,Email,Course,Status\n";
                 Object.values(students).forEach(s => {
-                    csv += `${s.id},${s.name},${s.phone},${s.email},${s.gender},${s.grade},${s.course},${s.mode}\n`;
+                    csv += `${s.id},${s.name},${s.phone},${s.email},${s.course},${s.status || 'Pending'}\n`;
                 });
                 let link = document.createElement('a');
                 link.href = 'data:text/csv;charset=utf-8,' + encodeURI(csv);
-                link.download = 'MIST_Student_Registry.csv';
+                link.download = 'MIST_Registry.csv';
                 link.click();
             });
         }
@@ -254,38 +251,12 @@
             database.ref('mist_students').child(key).once('value', (snapshot) => {
                 const s = snapshot.val();
                 const printWindow = window.open('', '_blank');
-                const date = new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
-
-                printWindow.document.write(`
-                    <html>
-                    <head>
-                        <title>Admission Letter - ${s.name}</title>
-                        <style>
-                            body { font-family: 'Times New Roman', serif; padding: 50px; line-height: 1.6; color: #333; }
-                            .letter-header { text-align: center; border-bottom: 2px solid #2e7d32; padding-bottom: 10px; margin-bottom: 30px; }
-                            .logo-img { width: 80px; }
-                            .school-name { font-size: 24px; font-weight: bold; color: #1b5e20; margin: 5px 0; }
-                            .date-row { text-align: right; margin-bottom: 20px; font-weight: bold; }
-                            .subject { text-align: center; text-decoration: underline; font-weight: bold; margin-bottom: 20px; text-transform: uppercase; }
-                            @media print { .no-print { display: none; } }
-                            .print-btn { background: #2e7d32; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; float: right; }
-                        </style>
-                    </head>
-                    <body>
-                        <button class="print-btn no-print" onclick="window.print()">Print/Save as PDF</button>
-                        <div class="letter-header">
-                            <img src="logo(1).png" class="logo-img">
-                            <div class="school-name">MUSKETEERS INSTITUTE OF SCIENCE AND TECHNOLOGY</div>
-                        </div>
-                        <div class="date-row">Date: ${date}</div>
-                        <p><strong>TO: ${s.name.toUpperCase()}</strong><br><strong>REG NO: ${s.id}</strong></p>
-                        <div class="subject">RE: PROVISIONAL ADMISSION FOR ${s.course.toUpperCase()}</div>
-                        <p>Dear ${s.name},</p>
-                        <p>We are pleased to inform you that your application to <strong>MIST</strong> has been successful for the <strong>${s.course}</strong> program.</p>
-                        <p>Yours Faithfully,<br><br><strong>The Registrar, Academics</strong></p>
-                    </body>
-                    </html>
-                `);
+                printWindow.document.write(`<html><head><title>Letter - ${s.name}</title></head><body onload="window.print()">
+                    <h2 style="text-align:center; color:#1b5e20;">MUSKETEERS INSTITUTE OF SCIENCE AND TECHNOLOGY</h2>
+                    <hr><p><strong>To: ${s.name}</strong> (ID: ${s.id})</p>
+                    <p>Congratulations! You have been admitted to study <strong>${s.course}</strong>.</p>
+                    <p>Yours Faithfully,<br>Registrar</p>
+                </body></html>`);
                 printWindow.document.close();
             });
         }
