@@ -173,13 +173,33 @@
             `);
             win.document.close();
         }
-        function logoutStudent() {
-    if(confirm("Are you sure you want to logout?")) {
-        loggedInStudent = null;
-        // Use replace so they can't "Go Back" into the dashboard
-        window.location.replace("index.html");
-    }
+        // Function to show the popup
+function logoutStudent() {
+    document.getElementById('logoutModal').style.display = 'flex';
 }
+
+// Function to hide the popup
+function closeLogoutModal() {
+    document.getElementById('logoutModal').style.display = 'none';
+}
+
+// Function that actually does the redirect
+function confirmLogout() {
+    loggedInStudent = null;
+    window.location.replace("index.html");
+}
+
     </script>
+    <div class="modal-overlay" id="logoutModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.6); z-index: 9999; justify-content: center; align-items: center;">
+    <div style="background: white; padding: 35px; border-radius: 15px; text-align: center; max-width: 350px; width: 90%; box-shadow: 0 10px 25px rgba(0,0,0,0.2);">
+        <h3 style="margin-top: 0; color: #2c3e50;">Confirm Logout</h3>
+        <p style="color: #666;">Are you sure you want to exit your portal?</p>
+        <div style="display: flex; gap: 10px; justify-content: center; margin-top: 20px;">
+            <button class="btn" style="background: #ff4757; color: white;" onclick="confirmLogout()">Yes, Logout</button>
+            <button class="btn" style="background: #bdc3c7; color: white;" onclick="closeLogoutModal()">Stay</button>
+        </div>
+    </div>
+</div>
+
 </body>
 </html>
