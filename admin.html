@@ -197,18 +197,18 @@
                     if(topGrades.includes(s.grade)) qualifiedCount++;
 
                     tableBody.innerHTML += `
-                        <tr>
-                            <td><span class="id-badge">${s.id}</span></td>
-                            <td><b>${s.name}</b></td>
-                            <td>${s.phone}</td>
-                            <td>${s.email}</td>
-                            <td>${s.gender}</td>
-                            <td>${s.grade}</td>
-                            <td>${s.course}</td>
-                            <td>${s.mode}</td>
-                            <td><button class="letter-btn" onclick="generateLetter('${key}')"><i class="fas fa-file-pdf"></i></button></td>
-                            <td><button class="delete-btn" onclick="deleteStudent('${key}')"><i class="fas fa-trash"></i></button></td>
-                        </tr>`;
+<tr>
+    <td><span class="id-badge">${s.id}</span></td>
+    <td><b>${s.name}</b></td>
+    <td>${s.phone}</td>
+    <td>${s.email}</td>
+    <td>${s.gender}</td>
+    <td>${s.grade}</td>
+    <td>${s.course}</td>
+    <td>${s.mode}</td>
+    <td><button class="letter-btn" onclick="generateLetter('${key}')"><i class="fas fa-file-pdf"></i></button></td>
+    <td><button class="delete-btn" onclick="deleteStudent('${key}')"><i class="fas fa-trash"></i></button></td>
+</tr>`;
                 });
 
                 document.getElementById('totalCount').innerText = keys.length;
