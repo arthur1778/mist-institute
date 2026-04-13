@@ -156,10 +156,9 @@
         <div class="stat-value" id="bizCount">0</div>
     </div>
     <div class="stat-card" style="border-left-color: #e67e22;">
-        <i class="fas fa-venus-mars"></i>
-        <h4>Female Ratio</h4>
-        <div class="stat-value" id="femaleRatio">0%</div>
-    </div>
+    <i class="fas fa-graduation-cap"></i>
+    <h4>Qualified (C+ & Above)</h4>
+    <div class="stat-value" id="qualifiedCount">0</div>
 </div>
 
         <div class="table-container">
@@ -202,54 +201,67 @@
         const database = firebase.database();
 
         // LIVE REAL-TIME REGISTRY LISTENER
-        function loadRegistry() {
+        // Reference to the 'mist_students' node
+database.ref('mist_students').on('value', (snapshot) => {
+    const students = snapshot.val();
     const tableBody = document.getElementById('tableBody');
+    tableBody.innerHTML = ""; 
     
-    database.ref('mist_students').on('value', (snapshot) => {
-        const students = snapshot.val();
-        tableBody.innerHTML = ""; 
+    if (!students) {
+        document.getElementById('totalCount').innerText = "0";
+        document.getElementById('itCount').innerText = "0";
+        document.getElementById('bizCount').innerText = "0";
+        document.getElementById('qualifiedCount').innerText = "0";
+        return;
+    }
+
+    const keys = Object.keys(students);
+    let itStudents = 0;
+    let bizStudents = 0;
+    let qualifiedCount = 0;
+
+    // Define what grades count as "Qualified"
+    const topGrades = ["A", "A-", "B+", "B", "B-", "C+"];
+
+    keys.forEach((key) => {
+        const s = students[key];
         
-        if (!students) {
-            updateDashboard(0, 0, 0, 0);
-            return;
+        // 1. Count IT Students
+        if(s.course && (s.course.includes("ICT") || s.course.includes("Software") || s.course.includes("Computer"))) {
+            itStudents++;
+        }
+        
+        // 2. Count Business Students
+        if(s.course && (s.course.includes("Business") || s.course.includes("Accounting") || s.course.includes("Marketing"))) {
+            bizStudents++;
         }
 
-        const keys = Object.keys(students);
-        let itStudents = 0;
-        let bizStudents = 0;
-        let femaleCount = 0;
+        // 3. Count Qualified (C+ and above)
+        if(topGrades.includes(s.grade)) {
+            qualifiedCount++;
+        }
 
-        keys.forEach((key) => {
-            const s = students[key];
-            
-            // Logic for Stats
-            if(s.courseType === "long" && s.course.includes("ICT") || s.course.includes("Software")) itStudents++;
-            if(s.courseType === "short" || s.course.includes("Business")) bizStudents++;
-            if(s.gender === "Female") femaleCount++;
-
-            // Draw the table (keep your existing table row code here)
-            tableBody.innerHTML += `
-                <tr>
-                    <td><span class="id-badge">${s.id}</span></td>
-                    <td><b>${s.name}</b></td>
-                    <td>${s.phone}</td>
-                    <td>${s.email}</td>
-                    <td>${s.gender}</td>
-                    <td>${s.grade}</td>
-                    <td>${s.course}</td>
-                    <td>${s.mode}</td>
-                    <td><button class="delete-btn" onclick="deleteStudent('${key}')"><i class="fas fa-trash"></i></button></td>
-                </tr>`;
-        });
-
-        // Update the Cards
-        document.getElementById('totalCount').innerText = keys.length;
-        document.getElementById('itCount').innerText = itStudents;
-        document.getElementById('bizCount').innerText = bizStudents;
-        const ratio = ((femaleCount / keys.length) * 100).toFixed(0);
-        document.getElementById('femaleRatio').innerText = ratio + "%";
+        // Keep your existing table row generation code here...
+        tableBody.innerHTML += `
+            <tr>
+                <td><span class="id-badge">${s.id}</span></td>
+                <td><b>${s.name}</b></td>
+                <td>${s.phone}</td>
+                <td>${s.email}</td>
+                <td>${s.gender}</td>
+                <td>${s.grade}</td>
+                <td>${s.course}</td>
+                <td>${s.mode}</td>
+                <td><button class="delete-btn" onclick="deleteStudent('${key}')"><i class="fas fa-trash"></i></button></td>
+            </tr>`;
     });
-}
+
+    // Update the Dashboard Cards
+    document.getElementById('totalCount').innerText = keys.length;
+    document.getElementById('itCount').innerText = itStudents;
+    document.getElementById('bizCount').innerText = bizStudents;
+    document.getElementById('qualifiedCount').innerText = qualifiedCount;
+});
         // Deletes from Firebase Cloud
         function deleteStudent(firebaseKey) {
             if(confirm("Confirm deletion from cloud?")) {
