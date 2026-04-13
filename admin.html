@@ -13,7 +13,6 @@
     <style>
         body { margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif; background: #f4f7f6; min-height: 100vh; display: flex; flex-direction: column; }
         
-        /* HEADER */
         header {
             background: linear-gradient(135deg, #2e7d32 0%, #1b5e20 100%);
             color: white; padding: 15px 40px; display: flex; align-items: center;
@@ -22,82 +21,50 @@
         .header-left { display: flex; align-items: center; gap: 15px; }
         .logo-circle { width: 45px; height: 45px; background: white; border-radius: 50%; padding: 5px; object-fit: contain; }
 
-        /* DASHBOARD STATS LAYOUT */
-.stats-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 20px;
-    margin-bottom: 30px;
-}
-.stat-card {
-    background: white;
-    padding: 20px;
-    border-radius: 12px;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.05);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    border-left: 5px solid #2e7d32;
-}
-.stat-card i { font-size: 24px; color: #2e7d32; margin-bottom: 10px; }
-.stat-card h4 { margin: 0; color: #7f8c8d; font-size: 14px; text-transform: uppercase; }
-.stat-card .stat-value { font-size: 24px; font-weight: bold; color: #2c3e50; margin-top: 5px; }
+        /* DASHBOARD STATS */
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-bottom: 30px; }
+        .stat-card {
+            background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+            display: flex; flex-direction: column; align-items: center; border-left: 5px solid #2e7d32;
+        }
+        .stat-card i { font-size: 24px; color: #2e7d32; margin-bottom: 10px; }
+        .stat-card h4 { margin: 0; color: #7f8c8d; font-size: 14px; text-transform: uppercase; }
+        .stat-card .stat-value { font-size: 24px; font-weight: bold; color: #2c3e50; margin-top: 5px; }
 
-        /* CENTERED SEARCH */
+        /* SEARCH & ACTIONS */
         .search-container { position: relative; width: 35%; }
         #searchInput {
             width: 100%; padding: 10px 20px 10px 40px; border-radius: 25px;
-            border: none; outline: none; background: rgba(255, 255, 255, 0.15);
-            color: white; font-size: 14px;
+            border: none; outline: none; background: rgba(255, 255, 255, 0.15); color: white;
         }
-        #searchInput::placeholder { color: rgba(255,255,255,0.7); }
         .search-icon { position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: white; }
-
-        /* ACTION AREA */
         .header-actions { display: flex; align-items: center; gap: 20px; }
-        .stats-bubble { background: white; padding: 4px 12px; border-radius: 20px; font-weight: bold; font-size: 14px; color: #333; }
-        .count-num { color: #2e7d32; }
-        .icon-btn { color: white; font-size: 18px; cursor: pointer; transition: 0.2s; }
+        .icon-btn { color: white; font-size: 18px; cursor: pointer; }
 
-        /* SETTINGS DROPDOWN */
+        /* SETTINGS MENU */
         .settings-menu {
-            display: none; position: absolute; top: 35px; right: 0;
-            background: white; border-radius: 5px; box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-            z-index: 100; min-width: 140px;
+            display: none; position: absolute; top: 35px; right: 0; background: white; 
+            border-radius: 5px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); z-index: 100; min-width: 140px;
         }
-        .settings-menu button { width: 100%; padding: 12px; border: none; background: none; text-align: left; cursor: pointer; color: #333; }
-        .settings-menu button:hover { background: #f9f9f9; }
+        .settings-menu button { width: 100%; padding: 12px; border: none; background: none; text-align: left; cursor: pointer; }
         .show { display: block; }
-
-        /* MINIMALIST LOGOUT MODAL */
-        .modal-overlay {
-            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0, 0, 0, 0.4); backdrop-filter: blur(3px);
-            z-index: 9999; justify-content: center; align-items: center;
-        }
-        .modal-box {
-            background: white; padding: 30px; border-radius: 15px; width: 320px;
-            text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-            animation: popIn 0.3s ease-out;
-        }
-        @keyframes popIn { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
-        .modal-box h3 { margin: 0 0 15px 0; color: #2c3e50; font-size: 18px; }
-        .modal-btns { display: flex; gap: 10px; justify-content: center; margin-top: 20px; }
-        .m-btn { padding: 10px 25px; border-radius: 8px; border: none; cursor: pointer; font-weight: bold; transition: 0.2s; }
-        .btn-stay { background: #eee; color: #555; }
-        .btn-logout { background: #ff4757; color: white; }
-        .m-btn:hover { opacity: 0.8; }
 
         /* TABLE */
         main { padding: 30px; flex: 1; overflow-x: auto; }
         .table-container { background: white; border-radius: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); overflow: hidden; }
         table { width: 100%; border-collapse: collapse; min-width: 1200px; }
-        th { background: #2c3e50; color: white; padding: 15px; text-align: left; font-size: 12px; text-transform: uppercase; }
+        th { background: #2c3e50; color: white; padding: 15px; text-align: left; font-size: 12px; }
         td { padding: 12px 15px; border-bottom: 1px solid #eee; font-size: 13px; color: #333; }
         .id-badge { background: #e8f5e9; color: #2e7d32; padding: 3px 7px; border-radius: 4px; font-weight: bold; }
-        .delete-btn { color: #ff4757; cursor: pointer; background: none; border: none; }
+        .delete-btn { color: #ff4757; cursor: pointer; border: none; background: none; }
+        .letter-btn { color: #3498db; cursor: pointer; border: none; background: none; }
 
-        /* FOOTER */
+        /* MODAL */
+        .modal-overlay {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.4); z-index: 9999; justify-content: center; align-items: center;
+        }
+        .modal-box { background: white; padding: 30px; border-radius: 15px; text-align: center; }
         footer { background: #2c3e50; color: white; text-align: center; padding: 15px; font-size: 12px; }
     </style>
 </head>
@@ -106,10 +73,8 @@
     <div class="modal-overlay" id="logoutModal">
         <div class="modal-box">
             <h3>Are you sure you want to logout?</h3>
-            <div class="modal-btns">
-                <button class="m-btn btn-logout" onclick="confirmLogout()">Yes, Logout</button>
-                <button class="m-btn btn-stay" onclick="closeModal()">Stay</button>
-            </div>
+            <button onclick="confirmLogout()">Yes, Logout</button>
+            <button onclick="closeModal()">Stay</button>
         </div>
     </div>
 
@@ -118,21 +83,17 @@
             <img src="logo(1).png" alt="Logo" class="logo-circle">
             <h2 style="margin:0;">MIST Registry</h2>
         </div>
-
         <div class="search-container">
             <i class="fas fa-search search-icon"></i>
             <input type="text" id="searchInput" onkeyup="searchTable()" placeholder="Search students...">
         </div>
-
         <div class="header-actions">
-            <div class="stats-bubble">Students: <span id="recordCount" class="count-num">0</span></div>
             <i class="fas fa-file-excel icon-btn" title="Export" onclick="exportToExcel()"></i>
             <i class="fas fa-print icon-btn" title="Print" onclick="window.print()"></i>
-            
             <div style="position: relative;">
                 <i class="fas fa-cog icon-btn" onclick="toggleSettings()"></i>
                 <div id="settingsMenu" class="settings-menu">
-                    <button onclick="openModal()" style="color: #ff4757;"><i class="fas fa-sign-out-alt"></i> Logout System</button>
+                    <button onclick="openModal()" style="color: #ff4757;">Logout System</button>
                 </div>
             </div>
         </div>
@@ -140,26 +101,27 @@
 
     <main>
         <div class="stats-grid">
-    <div class="stat-card">
-        <i class="fas fa-users"></i>
-        <h4>Total Applicants</h4>
-        <div class="stat-value" id="totalCount">0</div>
-    </div>
-    <div class="stat-card" style="border-left-color: #3498db;">
-        <i class="fas fa-laptop-code"></i>
-        <h4>IT Students</h4>
-        <div class="stat-value" id="itCount">0</div>
-    </div>
-    <div class="stat-card" style="border-left-color: #f1c40f;">
-        <i class="fas fa-briefcase"></i>
-        <h4>Business Students</h4>
-        <div class="stat-value" id="bizCount">0</div>
-    </div>
-    <div class="stat-card" style="border-left-color: #e67e22;">
-    <i class="fas fa-graduation-cap"></i>
-    <h4>Qualified (C+ & Above)</h4>
-    <div class="stat-value" id="qualifiedCount">0</div>
-</div>
+            <div class="stat-card">
+                <i class="fas fa-users"></i>
+                <h4>Total Applicants</h4>
+                <div class="stat-value" id="totalCount">0</div>
+            </div>
+            <div class="stat-card" style="border-left-color: #3498db;">
+                <i class="fas fa-laptop-code"></i>
+                <h4>IT Students</h4>
+                <div class="stat-value" id="itCount">0</div>
+            </div>
+            <div class="stat-card" style="border-left-color: #f1c40f;">
+                <i class="fas fa-briefcase"></i>
+                <h4>Business Students</h4>
+                <div class="stat-value" id="bizCount">0</div>
+            </div>
+            <div class="stat-card" style="border-left-color: #e67e22;">
+                <i class="fas fa-graduation-cap"></i>
+                <h4>Qualified (C+ & Above)</h4>
+                <div class="stat-value" id="qualifiedCount">0</div>
+            </div>
+        </div>
 
         <div class="table-container">
             <table id="adminTable">
@@ -173,6 +135,7 @@
                         <th>Grade</th>
                         <th>Course</th>
                         <th>Mode</th>
+                        <th>Letter</th>
                         <th>Action</th>
                     </tr>
                 </thead>
@@ -181,137 +144,87 @@
         </div>
     </main>
 
-    <footer>
-        &copy; 2026 Musketeers Institute of Science and Technology. All Rights Reserved.
-    </footer>
+    <footer>&copy; 2026 Musketeers Institute of Science and Technology. All Rights Reserved.</footer>
 
     <script>
-        // --- FIREBASE SETUP ---
         const firebaseConfig = {
-  apiKey: "AIzaSyAnnKPtJdIYbbrCRByrTgY1wDN13sIEgjk",
-  authDomain: "mist-institute.firebaseapp.com",
-  databaseURL: "https://mist-institute-default-rtdb.firebaseio.com/",
-  projectId: "mist-institute",
-  storageBucket: "mist-institute.firebasestorage.app",
-  messagingSenderId: "934136067316",
-  appId: "1:934136067316:web:62c0ec82aa9eef18471aa1"
-};
+            apiKey: "AIzaSyAnnKPtJdIYbbrCRByrTgY1wDN13sIEgjk",
+            authDomain: "mist-institute.firebaseapp.com",
+            databaseURL: "https://mist-institute-default-rtdb.firebaseio.com/",
+            projectId: "mist-institute",
+            storageBucket: "mist-institute.firebasestorage.app",
+            messagingSenderId: "934136067316",
+            appId: "1:934136067316:web:62c0ec82aa9eef18471aa1"
+        };
 
         firebase.initializeApp(firebaseConfig);
         const database = firebase.database();
 
-        // LIVE REAL-TIME REGISTRY LISTENER
-        // Reference to the 'mist_students' node
-database.ref('mist_students').on('value', (snapshot) => {
-    const students = snapshot.val();
-    const tableBody = document.getElementById('tableBody');
-    tableBody.innerHTML = ""; 
-    
-    if (!students) {
-        document.getElementById('totalCount').innerText = "0";
-        document.getElementById('itCount').innerText = "0";
-        document.getElementById('bizCount').innerText = "0";
-        document.getElementById('qualifiedCount').innerText = "0";
-        return;
-    }
+        function loadRegistry() {
+            database.ref('mist_students').on('value', (snapshot) => {
+                const students = snapshot.val();
+                const tableBody = document.getElementById('tableBody');
+                tableBody.innerHTML = ""; 
+                
+                if (!students) {
+                    ["totalCount", "itCount", "bizCount", "qualifiedCount"].forEach(id => document.getElementById(id).innerText = "0");
+                    tableBody.innerHTML = "<tr><td colspan='10' style='text-align:center;'>No records found.</td></tr>";
+                    return;
+                }
 
-    const keys = Object.keys(students);
-    let itStudents = 0;
-    let bizStudents = 0;
-    let qualifiedCount = 0;
+                const keys = Object.keys(students);
+                let itCount = 0, bizCount = 0, qualifiedCount = 0;
+                const topGrades = ["A", "A-", "B+", "B", "B-", "C+"];
 
-    // Define what grades count as "Qualified"
-    const topGrades = ["A", "A-", "B+", "B", "B-", "C+"];
+                keys.forEach((key) => {
+                    const s = students[key];
+                    if(s.course && (s.course.includes("ICT") || s.course.includes("Software"))) itCount++;
+                    if(s.course && (s.course.includes("Business") || s.course.includes("Accounting"))) bizCount++;
+                    if(topGrades.includes(s.grade)) qualifiedCount++;
 
-    keys.forEach((key) => {
-        const s = students[key];
-        
-        // 1. Count IT Students
-        if(s.course && (s.course.includes("ICT") || s.course.includes("Software") || s.course.includes("Computer"))) {
-            itStudents++;
-        }
-        
-        // 2. Count Business Students
-        if(s.course && (s.course.includes("Business") || s.course.includes("Accounting") || s.course.includes("Marketing"))) {
-            bizStudents++;
-        }
+                    tableBody.innerHTML += `
+                        <tr>
+                            <td><span class="id-badge">${s.id}</span></td>
+                            <td><b>${s.name}</b></td>
+                            <td>${s.phone}</td>
+                            <td>${s.email}</td>
+                            <td>${s.gender}</td>
+                            <td>${s.grade}</td>
+                            <td>${s.course}</td>
+                            <td>${s.mode}</td>
+                            <td><button class="letter-btn" onclick="generateLetter('${key}')"><i class="fas fa-file-pdf"></i></button></td>
+                            <td><button class="delete-btn" onclick="deleteStudent('${key}')"><i class="fas fa-trash"></i></button></td>
+                        </tr>`;
+                });
 
-        // 3. Count Qualified (C+ and above)
-        if(topGrades.includes(s.grade)) {
-            qualifiedCount++;
-        }
-
-        // Keep your existing table row generation code here...
-        tableBody.innerHTML += `
-            <tr>
-                <td><span class="id-badge">${s.id}</span></td>
-                <td><b>${s.name}</b></td>
-                <td>${s.phone}</td>
-                <td>${s.email}</td>
-                <td>${s.gender}</td>
-                <td>${s.grade}</td>
-                <td>${s.course}</td>
-                <td>${s.mode}</td>
-                <td><button class="delete-btn" onclick="deleteStudent('${key}')"><i class="fas fa-trash"></i></button></td>
-            </tr>`;
-    });
-
-    // Update the Dashboard Cards
-    document.getElementById('totalCount').innerText = keys.length;
-    document.getElementById('itCount').innerText = itStudents;
-    document.getElementById('bizCount').innerText = bizStudents;
-    document.getElementById('qualifiedCount').innerText = qualifiedCount;
-});
-        // Deletes from Firebase Cloud
-        function deleteStudent(firebaseKey) {
-            if(confirm("Confirm deletion from cloud?")) {
-                database.ref('mist_students').child(firebaseKey).remove()
-                    .then(() => alert("Student removed from system."))
-                    .catch(err => alert("Error deleting: " + err));
-            }
+                document.getElementById('totalCount').innerText = keys.length;
+                document.getElementById('itCount').innerText = itCount;
+                document.getElementById('bizCount').innerText = bizCount;
+                document.getElementById('qualifiedCount').innerText = qualifiedCount;
+            });
         }
 
-        // Custom Modal Logic
+        function deleteStudent(key) {
+            if(confirm("Confirm deletion?")) database.ref('mist_students').child(key).remove();
+        }
+
+        function toggleSettings() { document.getElementById("settingsMenu").classList.toggle("show"); }
         function openModal() { document.getElementById('logoutModal').style.display = 'flex'; }
         function closeModal() { document.getElementById('logoutModal').style.display = 'none'; }
         function confirmLogout() { window.location.href = "index.html"; }
-
-        function toggleSettings() { document.getElementById("settingsMenu").classList.toggle("show"); }
 
         function searchTable() {
             let input = document.getElementById("searchInput").value.toUpperCase();
             let tr = document.getElementById("tableBody").getElementsByTagName("tr");
             for (let i = 0; i < tr.length; i++) {
-                let txt = tr[i].innerText;
-                tr[i].style.display = txt.toUpperCase().indexOf(input) > -1 ? "" : "none";
+                tr[i].style.display = tr[i].innerText.toUpperCase().indexOf(input) > -1 ? "" : "none";
             }
         }
 
-        function exportToExcel() {
-            database.ref('mist_students').once('value').then((snapshot) => {
-                const students = snapshot.val();
-                if (!students) return alert("No data to export!");
-                
-                let csv = "ID,Name,Phone,Email,Gender,Grade,Course,Mode\n";
-                Object.values(students).forEach(s => {
-                    csv += `${s.id},${s.name},${s.phone},${s.email},${s.gender},${s.grade},${s.course},${s.mode}\n`;
-                });
-                
-                let link = document.createElement('a');
-                link.href = 'data:text/csv;charset=utf-8,' + encodeURI(csv);
-                link.download = 'MIST_Student_Registry.csv';
-                link.click();
-            });
+        function generateLetter(key) {
+            alert("Phase 2: Letter Generation coming up next!");
         }
 
-        window.onclick = function(e) { 
-            if (!e.target.matches('.fa-cog')) { 
-                const menu = document.getElementById("settingsMenu");
-                if(menu) menu.classList.remove('show'); 
-            }
-        }
-
-        // Trigger the live loader when the page opens
         window.onload = loadRegistry;
     </script>
 </body>
